@@ -37,7 +37,7 @@ export const searchTweets = async (query: string) => {
     
     console.log('Making Twitter API request for:', query);
     const response = await client.v2.search({
-      query: `${query} -is:retweet lang:en`,
+      query: query,
       max_results: 5,
       'tweet.fields': ['author_id', 'created_at', 'text', 'public_metrics'],
     });
