@@ -6,12 +6,11 @@ import { Loader2 } from 'lucide-react'
 
 interface ResultsSectionProps {
   recentTweets: Tweet[]
-  similarTweets: Tweet[]
   loading: boolean
   error: string | null
 }
 
-export default function ResultsSection({ recentTweets, similarTweets, loading, error }: ResultsSectionProps) {
+export default function ResultsSection({ recentTweets, loading, error }: ResultsSectionProps) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">

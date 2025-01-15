@@ -10,4 +10,10 @@ export interface Tweet {
     quote_count: number;
   };
   similarity?: number;
+}
+
+export interface ApiError {
+  message: string;
+  code?: number;
+  status?: number;
 } 

@@ -1,5 +1,6 @@
 import OpenAI from 'openai';
 import { NextResponse } from 'next/server';
+import { ApiError } from '@/lib/types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -22,10 +23,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ embedding: response.data[0].embedding });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('OpenAI API Error:', error);
+    const apiError = error as ApiError;
     return NextResponse.json(
-      { error: error.message },
+      { error: apiError.message || 'Unknown error occurred' },
       { status: 500 }
     );
   }

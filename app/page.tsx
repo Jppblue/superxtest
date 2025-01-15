@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import SearchBar from './components/SearchBar'
 import ResultsSection from './components/ResultsSection'
+import { Tweet } from '@/lib/types'
 
 export default function Home() {
-  const [recentTweets, setRecentTweets] = useState<any[]>([])
+  const [recentTweets, setRecentTweets] = useState<Tweet[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -29,8 +30,9 @@ export default function Home() {
       } else {
         throw new Error('Invalid response format')
       }
-    } catch (err: any) {
-      setError(err.message)
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message)
     } finally {
       setLoading(false)
     }
@@ -47,7 +49,6 @@ export default function Home() {
       <SearchBar onSearch={handleSearch} loading={loading} />
       <ResultsSection
         recentTweets={recentTweets}
-        similarTweets={[]}
         loading={loading}
         error={error}
       />

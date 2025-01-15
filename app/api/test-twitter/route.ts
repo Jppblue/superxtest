@@ -1,5 +1,6 @@
 import { searchTweets } from '@/lib/twitter';
 import { NextResponse } from 'next/server';
+import { ApiError } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,10 +27,12 @@ export async function GET(request: Request) {
       success: true,
       data: tweets.data
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error:', error);
     
-    if (error.code === 429) {
+    const apiError = error as ApiError;
+    
+    if (apiError.code === 429) {
       return NextResponse.json(
         { success: false, error: 'Rate limit reached', code: 429 },
         { status: 429 }
@@ -37,7 +40,7 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: apiError.message || 'Unknown error occurred' },
       { status: 500 }
     );
   }
