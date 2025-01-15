@@ -5,7 +5,8 @@ import SearchBar from './components/SearchBar'
 import ResultsSection from './components/ResultsSection'
 
 export default function Home() {
-  const [tweets, setTweets] = useState<any[]>([])
+  const [recentTweets, setRecentTweets] = useState<any[]>([])
+  const [similarTweets, setSimilarTweets] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -14,18 +15,27 @@ export default function Home() {
     setError(null)
     
     try {
-      const response = await fetch(`/api/test-twitter?q=${encodeURIComponent(query)}`)
-      const data = await response.json()
+      const recentResponse = await fetch(`/api/test-twitter?q=${encodeURIComponent(query)}`)
+      const recentData = await recentResponse.json()
       
-      if (!response.ok) {
+      if (!recentResponse.ok) {
         throw { 
-          message: data.error,
-          code: response.status
+          message: recentData.error,
+          code: recentResponse.status
         };
       }
 
-      if (data.success && Array.isArray(data.data)) {
-        setTweets(data.data)
+      if (recentData.success && Array.isArray(recentData.data)) {
+        setRecentTweets(recentData.data)
+        
+        const similarResponse = await fetch(`/api/semantic-search?q=${encodeURIComponent(query)}`)
+        const similarData = await similarResponse.json()
+        
+        if (similarData.success && Array.isArray(similarData.data)) {
+          setSimilarTweets(similarData.data)
+        } else {
+          throw new Error('Invalid response format')
+        }
       } else {
         throw new Error('Invalid response format')
       }
@@ -42,12 +52,13 @@ export default function Home() {
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-2">Tweet Search</h1>
         <p className="text-xl text-gray-600 dark:text-gray-400">
-          Find relevant tweets for inspiration
+          Find relevant tweets and discover similar content
         </p>
       </header>
       <SearchBar onSearch={handleSearch} loading={loading} />
       <ResultsSection
-        tweets={tweets}
+        recentTweets={recentTweets}
+        similarTweets={similarTweets}
         loading={loading}
         error={error}
       />

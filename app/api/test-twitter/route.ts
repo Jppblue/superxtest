@@ -29,21 +29,20 @@ export async function GET(request: Request) {
       );
     }
 
-    console.log('Attempting search with query:', query);
     const tweets = await searchTweets(query);
-    console.log('Search successful');
-
+    console.log('Tweets received:', tweets);
+    
     return NextResponse.json({
       success: true,
       data: tweets
     });
   } catch (error: any) {
-    console.error('API Error:', error);
+    console.error('Error:', error);
     
-    if (error.code === 401) {
+    if (error.code === 429) {
       return NextResponse.json(
-        { success: false, error: 'Twitter authentication failed. Please check API credentials.' },
-        { status: 401 }
+        { success: false, error: 'Rate limit reached', code: 429 },
+        { status: 429 }
       );
     }
 
