@@ -6,7 +6,6 @@ import ResultsSection from './components/ResultsSection'
 
 export default function Home() {
   const [recentTweets, setRecentTweets] = useState<any[]>([])
-  const [similarTweets, setSimilarTweets] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -27,21 +26,11 @@ export default function Home() {
 
       if (recentData.success && Array.isArray(recentData.data)) {
         setRecentTweets(recentData.data)
-        
-        const similarResponse = await fetch(`/api/semantic-search?q=${encodeURIComponent(query)}`)
-        const similarData = await similarResponse.json()
-        
-        if (similarData.success && Array.isArray(similarData.data)) {
-          setSimilarTweets(similarData.data)
-        } else {
-          throw new Error('Invalid response format')
-        }
       } else {
         throw new Error('Invalid response format')
       }
     } catch (err: any) {
       setError(err.message)
-      throw err;
     } finally {
       setLoading(false)
     }
@@ -58,7 +47,7 @@ export default function Home() {
       <SearchBar onSearch={handleSearch} loading={loading} />
       <ResultsSection
         recentTweets={recentTweets}
-        similarTweets={similarTweets}
+        similarTweets={[]}
         loading={loading}
         error={error}
       />

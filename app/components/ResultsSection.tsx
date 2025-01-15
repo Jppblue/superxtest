@@ -31,12 +31,12 @@ export default function ResultsSection({ recentTweets, similarTweets, loading, e
   return (
     <div className="grid grid-cols-1 gap-8">
       <div>
-        <h2 className="text-2xl font-bold mb-4">Relevant Tweets</h2>
-        {similarTweets.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400">No relevant tweets found</p>
+        <h2 className="text-2xl font-bold mb-4">Recent Tweets</h2>
+        {recentTweets.length === 0 ? (
+          <p className="text-gray-500 dark:text-gray-400">No tweets found</p>
         ) : (
-          similarTweets.map((tweet) => (
-            <TweetCard key={tweet.id} {...tweet} similarity={tweet.similarity} />
+          recentTweets.map((tweet) => (
+            <TweetCard key={tweet.id} {...tweet} />
           ))
         )}
       </div>

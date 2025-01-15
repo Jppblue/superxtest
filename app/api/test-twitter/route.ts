@@ -1,21 +1,7 @@
 import { searchTweets } from '@/lib/twitter';
-import { saveTweetWithEmbedding } from '@/lib/tweets';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
-
-interface Tweet {
-  id: string;
-  text: string;
-  author_id: string;
-  created_at: string;
-  public_metrics?: {
-    like_count: number;
-    reply_count: number;
-    retweet_count: number;
-    quote_count: number;
-  };
-}
 
 export async function GET(request: Request) {
   try {
@@ -32,9 +18,13 @@ export async function GET(request: Request) {
     const tweets = await searchTweets(query);
     console.log('Tweets received:', tweets);
     
+    if (!tweets || !Array.isArray(tweets.data)) {
+      throw new Error('Invalid response from Twitter API');
+    }
+
     return NextResponse.json({
       success: true,
-      data: tweets
+      data: tweets.data
     });
   } catch (error: any) {
     console.error('Error:', error);
