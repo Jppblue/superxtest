@@ -1,0 +1,8 @@
+Estamos haciendo una app en react, usando supabase y nextjs Y tailwind.css, usaremos APP router.
+Goal: search relevant X posts to get inspiration on what to write on a given topic.
+
+**Todo:** 
+
+- Setup a simple vector DB (use whatever service you like)
+- Build a basic front end with an input field “search” and a CTA
+- When pressing the button: search for relevant X post on the DB and display them
