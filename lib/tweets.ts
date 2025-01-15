@@ -1,8 +1,15 @@
 import { supabase } from './supabase';
 import { generateEmbedding } from './openai';
 
+interface TweetData {
+  id: string;
+  text: string;
+  author_id: string;
+  embedding: number[];
+}
+
 interface CacheEntry {
-  data: unknown[];
+  data: TweetData[];
   timestamp: number;
 }
 
@@ -10,9 +17,9 @@ interface TweetCache {
   [query: string]: CacheEntry;
 }
 
-export async function saveTweetWithEmbedding(tweet: Record<string, unknown>) {
+export async function saveTweetWithEmbedding(tweet: TweetData) {
   try {
-    const embedding = await generateEmbedding(tweet.text as string);
+    const embedding = await generateEmbedding(tweet.text);
 
     const { error } = await supabase.from('tweets').insert({
       id: tweet.id,
@@ -22,7 +29,7 @@ export async function saveTweetWithEmbedding(tweet: Record<string, unknown>) {
     });
 
     if (error) throw error;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error saving tweet:', error);
     throw error;
   }
@@ -31,7 +38,7 @@ export async function saveTweetWithEmbedding(tweet: Record<string, unknown>) {
 // Cache en memoria para tweets similares
 const SIMILAR_CACHE: TweetCache = {};
 
-export async function findSimilarTweets(query: string) {
+export async function findSimilarTweets(query: string): Promise<TweetData[]> {
   try {
     if (SIMILAR_CACHE[query]) {
       console.log('Using cached similar tweets');
@@ -51,7 +58,7 @@ export async function findSimilarTweets(query: string) {
       timestamp: Date.now()
     };
     return data;
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error finding similar tweets:', error);
     throw error;
   }
