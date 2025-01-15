@@ -7,6 +7,10 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseKey) 
 
+interface SimilarityGroup {
+  [key: number]: Tweet[];
+}
+
 export const findSimilarTweets = async (query: string) => {
   try {
     const embedding = await generateEmbedding(query);
@@ -19,7 +23,7 @@ export const findSimilarTweets = async (query: string) => {
     if (error) throw error;
 
     // Agrupar tweets por similitud
-    const groups = data.reduce((acc: any, tweet: Tweet) => {
+    const groups = data.reduce((acc: SimilarityGroup, tweet: Tweet) => {
       const similarityGroup = Math.floor((tweet.similarity ?? 0) * 10) / 10;
       if (!acc[similarityGroup]) acc[similarityGroup] = [];
       acc[similarityGroup].push(tweet);

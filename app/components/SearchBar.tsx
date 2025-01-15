@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Search } from 'lucide-react'
+import { ApiError } from '@/lib/types'
 
 interface SearchBarProps {
   onSearch: (query: string) => void
@@ -31,8 +32,9 @@ export default function SearchBar({ onSearch, loading }: SearchBarProps) {
   const handleSearch = async () => {
     try {
       await onSearch(query)
-    } catch (error: any) {
-      if (error.code === 429) {
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      if (apiError.code === 429) {
         setCooldown(900) // 15 minutos en segundos
       }
     }
