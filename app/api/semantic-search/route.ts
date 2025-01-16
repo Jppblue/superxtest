@@ -1,7 +1,7 @@
 import { searchTweets } from '@/lib/twitter';
 import { findSimilarTweets } from '@/lib/tweets';
 import { NextResponse } from 'next/server';
-import { ApiError, Tweet, TweetData } from '@/lib/types';
+import { ApiError, Tweet } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,11 +18,27 @@ interface SuccessResponse {
 
 type ApiResponse = ErrorResponse | SuccessResponse;
 
-function convertToTweet(tweet: any): Tweet {
+interface RawTweet {
+  id: string;
+  text?: string;
+  content?: string;
+  author_id?: string;
+  author?: string;
+  created_at?: string;
+  public_metrics?: {
+    like_count: number;
+    reply_count: number;
+    retweet_count: number;
+    quote_count: number;
+  };
+  similarity?: number;
+}
+
+function convertToTweet(tweet: RawTweet): Tweet {
   return {
     id: tweet.id,
-    text: tweet.text || tweet.content,
-    author_id: tweet.author_id || tweet.author,
+    text: tweet.text || tweet.content || '',
+    author_id: tweet.author_id || tweet.author || '',
     created_at: tweet.created_at || new Date().toISOString(),
     public_metrics: tweet.public_metrics,
     similarity: tweet.similarity
@@ -42,15 +58,15 @@ export async function GET(request: Request) {
 
   try {
     let newTweets: Tweet[] = [];
-    let twitterError = null;
+    let twitterError: Error | null = null;
 
     // 1. Intentar buscar tweets nuevos
     try {
       const response = await searchTweets(query);
       newTweets = response.data.map(convertToTweet);
-    } catch (error: any) {
+    } catch (error) {
       console.error('Twitter API Error:', error);
-      twitterError = error;
+      twitterError = error as Error;
     }
     
     // 2. Buscar tweets similares en la base de datos (esto siempre se ejecuta)

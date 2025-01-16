@@ -2,11 +2,29 @@ import { TwitterApi } from 'twitter-api-v2';
 import { generateEmbedding } from './openai';
 import { supabase } from './supabase';
 
+interface TwitterRawTweet {
+  id: string;
+  text?: string;
+  author_id?: string;
+  created_at?: string;
+  public_metrics?: {
+    like_count: number;
+    reply_count: number;
+    retweet_count: number;
+    quote_count: number;
+  };
+}
+
 const client = new TwitterApi(process.env.TWITTER_BEARER_TOKEN!);
 const roClient = client.readOnly;
 
-async function saveTweetToSupabase(tweet: any) {
+async function saveTweetToSupabase(tweet: TwitterRawTweet) {
   try {
+    if (!tweet.text || !tweet.author_id) {
+      console.error('Tweet missing required fields:', tweet);
+      return;
+    }
+
     const embedding = await generateEmbedding(tweet.text);
     
     await supabase.from('tweets').upsert({
