@@ -1,19 +1,23 @@
-import { getBaseUrl } from './utils';
+import OpenAI from 'openai';
+
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error('OPENAI_API_KEY is not defined');
+}
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
 
 export async function generateEmbedding(text: string) {
-  const baseUrl = getBaseUrl();
-  const response = await fetch(`${baseUrl}/api/embeddings`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ text }),
-  });
+  try {
+    const response = await openai.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: text,
+    });
 
-  if (!response.ok) {
+    return response.data[0].embedding;
+  } catch (error) {
+    console.error('OpenAI API Error:', error);
     throw new Error('Failed to generate embedding');
   }
-
-  const data = await response.json();
-  return data.embedding;
 } 
