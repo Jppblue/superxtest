@@ -5,12 +5,12 @@ import { Tweet } from '@/lib/types'
 import { Loader2 } from 'lucide-react'
 
 interface ResultsSectionProps {
-  recentTweets: Tweet[]
+  tweets: Tweet[]
   loading: boolean
   error: string | null
 }
 
-export default function ResultsSection({ recentTweets, loading, error }: ResultsSectionProps) {
+export default function ResultsSection({ tweets, loading, error }: ResultsSectionProps) {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -30,12 +30,12 @@ export default function ResultsSection({ recentTweets, loading, error }: Results
   return (
     <div className="grid grid-cols-1 gap-8">
       <div>
-        <h2 className="text-2xl font-bold mb-4">Recent Tweets</h2>
-        {recentTweets.length === 0 ? (
+        <h2 className="text-2xl font-bold mb-4">Relevant Tweets</h2>
+        {tweets.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400">No tweets found</p>
         ) : (
-          recentTweets.map((tweet) => (
-            <TweetCard key={tweet.id} {...tweet} />
+          tweets.map((tweet) => (
+            <TweetCard key={tweet.id} {...tweet} similarity={tweet.similarity} />
           ))
         )}
       </div>

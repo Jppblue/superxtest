@@ -49,7 +49,7 @@ export async function findSimilarTweets(query: string): Promise<TweetData[]> {
     const { data, error } = await supabase.rpc('match_tweets', {
       query_embedding: embedding,
       match_threshold: 0.7,
-      match_count: 5
+      match_count: 50
     });
 
     if (error) throw error;

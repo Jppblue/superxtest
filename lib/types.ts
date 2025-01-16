@@ -12,6 +12,15 @@ export interface Tweet {
   similarity?: number;
 }
 
+export interface TweetData {
+  id: string;
+  text: string;
+  author_id: string;
+  created_at: string;
+  embedding: number[];
+  similarity?: number;
+}
+
 export interface ApiError {
   message: string;
   code?: number;

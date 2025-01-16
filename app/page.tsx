@@ -6,7 +6,7 @@ import ResultsSection from './components/ResultsSection'
 import { Tweet } from '@/lib/types'
 
 export default function Home() {
-  const [recentTweets, setRecentTweets] = useState<Tweet[]>([])
+  const [tweets, setTweets] = useState<Tweet[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -15,18 +15,18 @@ export default function Home() {
     setError(null)
     
     try {
-      const recentResponse = await fetch(`/api/test-twitter?q=${encodeURIComponent(query)}`)
-      const recentData = await recentResponse.json()
+      const response = await fetch(`/api/semantic-search?q=${encodeURIComponent(query)}`)
+      const data = await response.json()
       
-      if (!recentResponse.ok) {
+      if (!response.ok) {
         throw { 
-          message: recentData.error,
-          code: recentResponse.status
+          message: data.error,
+          code: response.status
         };
       }
 
-      if (recentData.success && Array.isArray(recentData.data)) {
-        setRecentTweets(recentData.data)
+      if (data.success && Array.isArray(data.data)) {
+        setTweets(data.data)
       } else {
         throw new Error('Invalid response format')
       }
@@ -43,12 +43,12 @@ export default function Home() {
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold mb-2">Tweet Search</h1>
         <p className="text-xl text-gray-600 dark:text-gray-400">
-          Find relevant tweets and discover similar content
+          Find relevant tweets for inspiration
         </p>
       </header>
       <SearchBar onSearch={handleSearch} loading={loading} />
       <ResultsSection
-        recentTweets={recentTweets}
+        tweets={tweets}
         loading={loading}
         error={error}
       />
