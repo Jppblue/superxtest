@@ -30,7 +30,7 @@ async function saveTweetToSupabase(tweet: TwitterRawTweet) {
     console.log('Embedding generated successfully');
     
     console.log('Saving tweet to Supabase:', tweet.id);
-    const { data, error } = await supabase.from('tweets').upsert({
+    const { error } = await supabase.from('tweets').upsert({
       id: tweet.id,
       content: tweet.text,
       author: tweet.author_id,
